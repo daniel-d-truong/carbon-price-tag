@@ -13,6 +13,5 @@ app.register_blueprint(carbon_price, url_prefix='/get-footprint')
 def hello_world():
     return 'Hello World!'
 
-
 if __name__ == '__main__':
     app.run()
