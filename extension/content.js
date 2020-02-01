@@ -1,44 +1,53 @@
-const url = window.location.href;
-// Send the URL to the backend and load the content into the page
-
-// grab items here
-setTimeout(1000);
-// let aaa, cheese;
-
-// aaa = document.querySelector("#productTitle");
-// cheese = aaa.textContent.trim();
-// console.log(cheese);
-// document.addEventListener("DOMContextLoaded", (event) => {
-//     aaa = document.querySelector("#productTitle");
-//     console.log("poop");
-//     cheese = aaa.textContent.trim();
-//     console.log(cheese);
-// });
-
+// Gets the Item Weight, Shipping Weight, and asin
 let a = document.querySelector("#detail-bullets");
-
 let feature_list = a.getElementsByTagName("table")[0].getElementsByTagName('tbody')[0].getElementsByTagName('tr')[0].getElementsByTagName('td')[0].getElementsByTagName('div')[0].getElementsByTagName('ul')[0].getElementsByTagName('li')
-let item_weight = null;
-let ship_weight = null;
+let item_weight = 0;
+let ship_weight = 0;
 let asin = null;
 for (const feature of feature_list) {
     let feature_arr = feature.innerText.split(': ');
     if (feature_arr[0] === "Item Weight") {
-        item_weight = feature_arr[1]
+        item_weight = Number(feature_arr[1]);
     }
     if (feature_arr[0] === "Shipping Weight") {
-        ship_weight = feature_arr[1]
+        ship_weight = Number(feature_arr[1]);
     }
     if (feature_arr[0] === "ASIN") {
         asin = feature_arr[1]
     }
-
 }
-
 console.log([item_weight, ship_weight, asin]);
 
-//
-// let bbb = document.querySelector()
+// Gets the name of the product
+const productTitleEl = document.querySelector("#productTitle");
+const productName = productTitleEl.innerHTML.split(" ")[0];
+
+// Gets the ingredients of the product
+const importantInfoEl = document.querySelector("#important-information").querySelectorAll(".content");
+let ingredients = [];
+for (const infoEl of importantInfoEl){
+    if (infoEl.getElementsByTagName("span")[0].innerText.toUpperCase() == "INGREDIENTS") {
+        let ingredientsString = infoEl.innerText.replace("Ingredients\n", "");
+        ingredientsString = ingredientsString.split("*").join("").split("\n").join("");
+        ingredients = ingredientsString.split(", ");
+        console.log(ingredients);
+    }
+}
+
+// Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
+// whenever the user updates their address.
+await fetch("http://127.0.0.1:5000/item", {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        'name': productName,
+        'ingredients': ingredients,
+        'weight': item_weight + ship_weight,
+        'carbon_location': ''
+    })
+});
 
 // Adds the new element into the Amazon page
 const el = document.querySelector("#priceblock_ourprice_row");
