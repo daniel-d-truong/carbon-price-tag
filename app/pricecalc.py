@@ -19,6 +19,7 @@ def calc_carbon_cost(item):
   production_miles = co2s_in_miles[item]
   transport_dist = 10.0;
   cost = (production_miles + transport_dist)  / FUEL_EFFIC * GAS_PRICE
+  # cost /= weight
   return cost
 
 load_co2s()
