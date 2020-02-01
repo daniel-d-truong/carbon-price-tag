@@ -28,6 +28,26 @@ def get_item(item_id):
         return f"An Error Occured: {e}"
 
 
+@firebase_db.route('/item', methods=['POST'])
+def add_item():
+    try:
+        json_req = request.json
+        item_data = {}
+        if 'id' in json_req:
+            item_id = json_req['id']
+            item_data['id'] = item_id
+            if 'price' in json_req:
+                item_data['price'] = json_req['price']
+            else:
+                raise Exception('no price given')
+            items.document(item_id).set(item_data)
+            return jsonify({"success": True}), 200
+        else:
+            raise Exception('no item id given')
+
+    except Exception as e:
+        return f"An Error Occured: {e}"
+
 # user routes
 @firebase_db.route('/user/<user_id>', methods=['GET'])
 def get_user(user_id):
