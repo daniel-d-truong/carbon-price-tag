@@ -14,10 +14,10 @@ co2s = {} # dictionary of co2 emission in production of food items
 co2s_in_miles = {} # converted to equivalent miles
 
 gmaps = googlemaps.Client(globals.API_KEY)
-load_co2s()
+# load_co2s()
 
 def load_co2s():
-    with open("./data/co2_equivs.csv", "r") as f:
+    with open("../data/co2_equivs.csv", "r") as f:
         f = csv.reader(f, delimiter=',')
         next(f) # skip header
         for row in f:
@@ -48,3 +48,4 @@ def get_footprint():
     else:
         return 'error exception here'
 
+load_co2s()
