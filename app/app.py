@@ -1,6 +1,7 @@
 from flask import Flask
 from db import firebase_db
 from scrape import scrape
+from carbon_price import carbon_price
 
 
 app = Flask(__name__)
