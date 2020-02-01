@@ -10,3 +10,18 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(finalAddress);
     });
 });
+
+const userButton = document.querySelector("#updateUser");
+const userText = document.querySelector("#username");
+updateUserTotal(userText.value);
+userButton.addEventListener("click", () => {
+    // updates the user carbon footprint spent
+    console.log("eee");
+    const newUser = userText.value;
+    updateUserTotal(newUser);
+});
+
+const updateUserTotal = (username) => { 
+    // calls the backend to update the amount of carbon footprint spent based on the user
+    console.log(username);
+}
