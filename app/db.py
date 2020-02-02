@@ -15,6 +15,7 @@ users = db.collection('users')
 
 @firebase_db.route('/')
 def test_db():
+    
     return 'TESTING TESTNG'
 
 
