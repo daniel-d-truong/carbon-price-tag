@@ -28,14 +28,14 @@ def get_item(item_id):
         return jsonify(itm.to_dict()), 200
 
     except Exception as e:
-        return f"An Error Occured: {e}"
+        return "An Error Occured: {e}"
 
 def get_item_by_id(item_id):
     try:
         itm = items.document(item_id).get()
         return itm.to_dict()
     except Exception as e:
-        return f"An Error Occured: {e}"
+        return "An Error Occured: {e}"
 
 
 @firebase_db.route('/item', methods=['POST'])
@@ -62,7 +62,7 @@ def add_item():
             raise Exception('no item id given')
 
     except Exception as e:
-        return f"An Error Occured: {e}"
+        return "An Error Occured: {e}"
 
 
 def item_make(item_id, name, ingredients=None, weight=None):
@@ -102,14 +102,14 @@ def get_user(user_id):
         return jsonify(usr.to_dict()), 200
 
     except Exception as e:
-        return f"An Error Occured: {e}"
+        return "An Error Occured: {e}"
 
 def get_user_by_id(user_id):
     try:
         usr = users.document(user_id).get()
         return usr.to_dict()
     except Exception as e:
-        return f"An Error Occured: {e}"
+        return "An Error Occured: {e}"
 
 
 # @firebase_db.route('/user/<user_id>/update')
@@ -135,7 +135,7 @@ def cart_checkout():
         else:
             raise Exception('user footprint updating failed')
     except Exception as e:
-        return f"An Error Occured: {e}"
+        return "An Error Occured: {e}"
 
 
 def update_user_footprint(user_id, item_map):
@@ -167,4 +167,4 @@ def update_user_footprint(user_id, item_map):
         # idk what to return here.... we succeeded!
         return True
     except Exception as e:
-        return f"An error occurred: {e}"
+        return "An error occurred: {e}"
