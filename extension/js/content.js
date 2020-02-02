@@ -42,22 +42,34 @@ for (const infoEl of importantInfoEl){
 // Adds the new element into the Amazon page
 const el = document.querySelector("#priceblock_ourprice_row");
 const carbonRow = document.createElement("tr");
+const carbonCell = document.createElement("td");
+carbonCell.setAttribute("colspan", 2);
+const carbonTable = document.createElement("table");
 const carbonData1 = document.createElement("td");
 const carbonData2 = document.createElement("td");
 
-const carbonRowStyles = "padding: 1em;display: block;margin: 1em;width: 100%;border-radius: 5px;border: 1px solid #53aa56;";
-const carbonData1Styles = "color: #555;";
-const carbonData2Styles = "color: #53aa56;";
-
-carbonRow.setAttribute("style", carbonRowStyles);
-carbonData1.setAttribute("style", carbonData1Styles);
-carbonData2.setAttribute("style", carbonData2Styles);
+carbonTable.setAttribute("style", "\
+    display: block;\
+    width: 90%;\
+    margin-top: 1em;\
+    padding: 1em;\
+    font-family: Affogato, sans-serif;\
+    font-size: 14px;\
+    font-weight: 500;\
+    border: 1px solid #53aa56;\
+    border-radius: 5px;");
+carbonData1.setAttribute("style", "color: #555;");
+carbonData2.setAttribute("style", "color: #53aa56;");
 
 carbonData1.innerHTML = "Carbon price:";
-carbonData2.innerHTML = "est. $1.23 (equivalent to 60 kg of CO2)";
+const carbonCost = 1.23;
+const carbonCO2 = 60;
+carbonData2.innerHTML = "est. $" + carbonCost + "  (equivalent to " + carbonCO2 + " kg of CO2)";
 
-carbonRow.appendChild(carbonData1);
-carbonRow.appendChild(carbonData2);
+carbonRow.appendChild(carbonCell);
+carbonCell.appendChild(carbonTable);
+carbonTable.appendChild(carbonData1);
+carbonTable.appendChild(carbonData2);
 el.insertAdjacentElement('afterend', carbonRow);
 
 port.onMessage.addListener(function(message) {
