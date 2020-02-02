@@ -31,7 +31,7 @@ def get_item(item_id):
 def get_item_by_id(item_id):
     try:
         itm = items.document(item_id).get()
-        return itm
+        return itm.to_dict()
     except Exception as e:
         return f"An Error Occured: {e}"
 
@@ -102,7 +102,7 @@ def get_user(user_id):
 def get_user_by_id(user_id):
     try:
         usr = users.document(user_id).get()
-        return usr
+        return usr.to_dict()
     except Exception as e:
         return f"An Error Occured: {e}"
 
