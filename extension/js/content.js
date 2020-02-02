@@ -1,8 +1,8 @@
 // Set functions
+const idObj = {}
 const cartCarbonFootprint = () => {
     const allCartEl = document.querySelectorAll(".sc-product-title.a-size-medium");
     const quantityElList = document.querySelectorAll(".a-icon.a-icon-dropdown")
-    const idObj = { };
     for (let i = 0; i < allCartEl.length; i++) {
         // gets the ID of the amazon item
         const item = allCartEl[i];
@@ -22,15 +22,15 @@ const cartCarbonFootprint = () => {
             console.log("changed");
         });
         if (id) {
-            idObj[id] = quantity
+            idObj[id] = quantity;
         }
     }
     console.log(idObj);
-}
+};
 
 const convertToPounds = (ounces) => {
     return ounces*(0.0625);
-}
+};
 
 const grabWeightPerQuan = (term) => {
     let i = upperProductName.indexOf(term) - 2;
@@ -41,13 +41,21 @@ const grabWeightPerQuan = (term) => {
         i--;
     }
     weight = convertToPounds(Number(amount));
-}
+};
+
+const convertToKilo = (pounds) => {
+    return 0.453592*pounds;
+};
 
 // logic for doing the cart
 const url = window.location.href;
 if (url.includes("cart")) {
     cartCarbonFootprint();
-} 
+} else {
+    
+}
+
+
 
 // Gets the Item Weight, Shipping Weight, and asin
 let a = document.querySelector("#detail-bullets");
@@ -143,10 +151,8 @@ carbonTable.appendChild(carbonData1);
 carbonTable.appendChild(carbonData2);
 el.insertAdjacentElement('afterend', carbonRow);
 
-chrome.runtime.onMessage.addListener(function(message) {
-    console.log(message);
-    // Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
-    // whenever the user updates their address.
+// makes fetch request to the backend
+const makeCarbonFetch = async (address) => {
     fetch("http://127.0.0.1:5000/carbon-price/get-footprint", {
         method: 'POST',
         headers: {
@@ -157,13 +163,29 @@ chrome.runtime.onMessage.addListener(function(message) {
             'name': productName, 
             'ingredients': ingredients,
             'weight': item_weight + ship_weight,
-            'carbon_location': message.address 
+            'carbon_location': address 
         })
     }).then(response => {
         return response.json();
     }).then((json) => {
         let cost = price.format(json['total_carbon_cost']);
-        let co2Mass = distance.format(json['kg_of_co2']);
-        carbonData2.innerHTML = "est. " + cost + "  (equivalent to " + co2Mass + " kg of CO2)";
+        let kgOfCo2 = distance.format(json['kg_of_co2']);
+        carbonData2.innerHTML = "est. $" + cost + "  (equivalent to " + kgOfCo2 + " kg of CO2)";
     });
+}
+
+makeCarbonFetch("13138 Waco St, Baldwin Park, 91706");
+
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.address) {
+      console.log(message);
+      // Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
+      // whenever the user updates their address.
+      makeCarbonFetch(message.address);
+    } else if (message.event) {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            var activeTab = tabs[0];
+            chrome.tabs.sendMessage(activeTab.id, {"message": "clicked_browser_action"});
+        });
+    }
 });

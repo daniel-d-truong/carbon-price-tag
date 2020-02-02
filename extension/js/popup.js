@@ -1,5 +1,16 @@
 // Note that it's very hard to debug this since it is a popup. 
 document.addEventListener("DOMContentLoaded", () => {
+<<<<<<< HEAD
+=======
+    let _port; 
+    let _cartPort;
+    chrome.runtime.onConnect.addListener(function(port) {
+        console.log("connected to: " + port);
+        _port = port;
+        _cartPort = cartPort;
+    });
+
+>>>>>>> f0141104ce83f3637ab5fbd6f5b60c093290ba40
     const broadcastAddress = (address) => {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             var activeTab = tabs[0];
@@ -72,3 +83,11 @@ function drawArc() {
         arc.style.stroke = "#C73E41";
     }
 }
+
+// Buying foods event listener
+document.querySelector(".button").addEventListener("click", () => {
+    const username = document.querySelector("#username").value;
+    _cartPort.postMessage({
+        userId: username
+    })
+});
