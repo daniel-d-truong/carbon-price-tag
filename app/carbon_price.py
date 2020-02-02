@@ -14,10 +14,6 @@ co2s = {}  # dictionary of co2 emission in production of food items
 co2s_in_miles = {}  # converted to equivalent miles
 
 gmaps = googlemaps.Client(globals.API_KEY)
-print(globals.API_KEY)
-
-
-# load_co2s()
 
 def load_co2s():
     with open("../data/co2_equivs.csv", "r") as f:
@@ -64,13 +60,22 @@ def get_footprint():
     print(json_req)
 
     if 'name' in json_req and 'ingredients' in json_req and 'weight' in json_req and 'carbon_location' in json_req:
-        cost, kgOfCo2 = calc_carbon_cost(json_req['name'], json_req['carbon_location'], json_req['weight'], json_req['ingredients'])
-        return jsonify({
-            "total_carbon_cost": cost,
-            'kg_of_co2': kgOfCo2
-        })
+        print(json_req['name'])
+        for item in json_req['name']:
+            if item not in co2s:
+                print("Not here: " + str(item))
+                continue
+            cost, kgOfCo2 = calc_carbon_cost(item, json_req['carbon_location'], json_req['weight'], json_req['ingredients'])
+            return jsonify({
+                "total_carbon_cost": cost,
+                'kg_of_co2': kgOfCo2
+            })
     else:
         return 'error exception here'
+
+    return jsonify({
+        "log": "This item matched none of the foods in our current data set."
+    })
 
 
 load_co2s()

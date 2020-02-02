@@ -92,7 +92,7 @@ if (url.includes("cart")) {
 } else {
         // Gets the name of the product
     const productTitleEl = document.querySelector("#productTitle");
-    productName = productTitleEl.innerText.split(" ")[0];
+    productName = productTitleEl.innerText.split(" ");
         // Gets the Item Weight, Shipping Weight, and asin
     let a = document.querySelector("#detail-bullets");
     let feature_list = a.getElementsByTagName("table")[0].getElementsByTagName('tbody')[0].getElementsByTagName('tr')[0].getElementsByTagName('td')[0].getElementsByTagName('div')[0].getElementsByTagName('ul')[0].getElementsByTagName('li');
