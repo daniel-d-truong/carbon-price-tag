@@ -128,7 +128,6 @@ carbonTable.setAttribute("style", "\
     width: 90%;\
     margin-top: 1em;\
     padding: 1em;\
-    font-family: Affogato, sans-serif;\
     font-size: 14px;\
     font-weight: 500;\
     border: 1px solid #53aa56;\
