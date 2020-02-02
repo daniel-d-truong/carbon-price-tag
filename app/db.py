@@ -48,6 +48,36 @@ def add_item():
     except Exception as e:
         return f"An Error Occured: {e}"
 
+
+def item_make(item_id, name, ingredients=None, item_weight=None,
+              ship_weight=None):
+    """
+    create item with specified params. otherwise modifies existing item
+    adds to db
+    :return:
+    """
+    new_item = {}
+    new_item['id'] = item_id
+    new_item['name'] = name
+    if ingredients:
+        new_item['ingredients'] = ingredients
+    if item_weight:
+        new_item['item_weight'] = item_weight
+    if ship_weight:
+        new_item['ship_weight'] = ship_weight
+
+    items.document(item_id).set(new_item)
+    return jsonify({"success": True}), 200
+
+
+@firebase_db.route('/test')
+def test():
+    item_make('IDHERE', 'test item', ingredients=['abc', 'wqer'],
+              item_weight=42.01,
+              ship_weight=45)
+    return jsonify({"success": True}), 200
+
+
 # user routes
 @firebase_db.route('/user/<user_id>', methods=['GET'])
 def get_user(user_id):
