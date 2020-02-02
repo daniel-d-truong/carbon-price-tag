@@ -1,0 +1,16 @@
+@font-face {
+    font-family: 'Affogato';
+    src: url('Affogato-Regular.woff2') format('woff2'),
+        url('Affogato-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Affogato';
+    src: url('Affogato-Black.woff2') format('woff2'),
+        url('Affogato-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
