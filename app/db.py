@@ -23,6 +23,7 @@ def test_db():
 def get_item(item_id):
     try:
         itm = items.document(item_id).get()
+        print(itm.to_dict())
         return jsonify(itm.to_dict()), 200
 
     except Exception as e:
@@ -120,10 +121,14 @@ def get_user_by_id(user_id):
 def cart_checkout():
     try:
         json_req = request.json
+        if 'user_id' not in json_req:
+            raise Exception('no user id given')
+        if 'item_map' not in json_req:
+            raise Exception('there is no item map')
         if update_user_footprint(json_req['user_id'], json_req['item_map']):
             return jsonify({"success": True}), 200
         else:
-            raise Exception
+            raise Exception('user footprint updating failed')
     except Exception as e:
         return f"An Error Occured: {e}"
 
@@ -132,24 +137,26 @@ def update_user_footprint(user_id, item_map):
     # map of item ids corresponding to total weight of each
     # iterate thru list of ids, calculate for each one
     #
+    try:
+        user_info = get_user_by_id(user_id)
 
-    user_info = get_user_by_id(user_id)
+        new_footprint = 0
 
-    new_footprint = 0
+        for item_key in item_map:
+            item_info = get_item_by_id(item_key)
+            footprint = calc_carbon_cost(item_key, user_info['location'], item_info['weight'], item_info['ingredients'])
 
-    for item_key in item_map:
-        item_info = get_item_by_id(item_key)
-        footprint = calc_carbon_cost(item_key, user_info['location'], item_info['weight'], item_info['ingredients'])
+            # total footprint is that footprint times the quantity of the item that was ordered
+            total_footprint = footprint * item_map[item_key]
 
-        # total footprint is that footprint times the quantity of the item that was ordered
-        total_footprint = footprint * item_map[item_key]
+            new_footprint += total_footprint
 
-        new_footprint += total_footprint
+        # update user footprint
+        user_info['carbon_footprint'] = new_footprint
 
-    # update user footprint
-    user_info['carbon_footprint'] = new_footprint
+        users.document(user_id).update(user_info)
 
-    users.document(user_id).update(user_info)
-
-    # idk what to return here.... we succeeded!
-    return True
+        # idk what to return here.... we succeeded!
+        return True
+    except Exception as e:
+        return f"An error occurred: {e}"
