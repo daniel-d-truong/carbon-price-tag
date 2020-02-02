@@ -1,6 +1,6 @@
 from flask import Blueprint, abort, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app
-from carbon_price import calc_carbon_cost
+from carbon_price import calc_carbon_cost, co2s
 
 firebase_db = Blueprint('firebase_db', __name__)
 
@@ -74,12 +74,15 @@ def item_make(item_id, name, ingredients=None, weight=None):
     new_item = {}
     new_item['id'] = item_id
     new_item['name'] = name
+    new_item['ingredients'] = []
+    new_item['weight'] = 0
     if ingredients:
         new_item['ingredients'] = ingredients
     if weight:
         new_item['weight'] = weight
 
     items.document(item_id).set(new_item)
+    print(new_item)
     return jsonify({"success": True}), 200
 
 
@@ -127,7 +130,8 @@ def cart_checkout():
         if 'item_map' not in json_req:
             raise Exception('there is no item map')
         if update_user_footprint(json_req['user_id'], json_req['item_map']):
-            return jsonify({"success": True}), 200
+            amount = get_user_by_id(json_req['user_id'])['total_spending']
+            return jsonify({"new_footprint": amount}), 200
         else:
             raise Exception('user footprint updating failed')
     except Exception as e:
@@ -141,21 +145,24 @@ def update_user_footprint(user_id, item_map):
     try:
         user_info = get_user_by_id(user_id)
 
-        new_footprint = 0
-
+        new_footprint = user_info['total_spending']
+        print (item_map)
         for item_key in item_map:
+            # Every key in the key map
             item_info = get_item_by_id(item_key)
-            footprint = calc_carbon_cost(item_key, user_info['location'], item_info['weight'], item_info['ingredients'])
+
+            # Grabs the first val (not sure if it should be second or not)
+            footprint = calc_carbon_cost(item_info["name"], user_info['location'], item_info['weight'], item_info['ingredients'])[0]
 
             # total footprint is that footprint times the quantity of the item that was ordered
             total_footprint = footprint * item_map[item_key]
-
             new_footprint += total_footprint
 
         # update user footprint
-        user_info['carbon_footprint'] = new_footprint
-
+        user_info['total_spending'] = new_footprint
         users.document(user_id).update(user_info)
+
+        print(new_footprint)
 
         # idk what to return here.... we succeeded!
         return True

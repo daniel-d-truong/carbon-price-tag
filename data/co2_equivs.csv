@@ -1,6 +1,6 @@
 FOOD,CO2_KILOS
 Lamb,39.2
-e,27.0
+Beef,27.0
 Cheese,13.5
 Pork,12.1
 Turkey,10.9
@@ -69,7 +69,8 @@ Apple,1.1
 Apples,1.1
 Apricot,1.1
 Banana,1.1
-Blueberries,1.1
+Blueberries,1.1,
+Blueberry,1.1
 Cantaloupe,1.1
 Cherries,1.1
 Dewberry,1.1
