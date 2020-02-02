@@ -32,7 +32,6 @@ const cartCarbonFootprint = () => {
         let quantity = quantityEl.innerText;
         // possibly deal with some logic when the quantity is not a common one
 
-
         // add event listener to quantityEl when the value gets changed
         quantityEl.addEventListener("change", (event) => {
             console.log("changed");
@@ -146,8 +145,6 @@ if (url.includes("cart")) {
     carbonCell.setAttribute("colspan", 2);
     const carbonTable = document.createElement("table");
 
-    
-
     carbonTable.setAttribute("style", "\
         display: block;\
         width: 90%;\
@@ -161,8 +158,6 @@ if (url.includes("cart")) {
     carbonData2.setAttribute("style", "color: #53aa56;");
 
     carbonData1.innerHTML = "Carbon price:";
-    const carbonCost = 1.23;
-    const carbonCO2 = 60;
     const placeHolder = "___";
     carbonData2.innerHTML = "est. $" + placeHolder + "  (equivalent to " + placeHolder + " kg of CO2)";
 
@@ -175,13 +170,32 @@ if (url.includes("cart")) {
 }
 
 chrome.runtime.onMessage.addListener((message) => {
-    console.log(message);
     if (message.address) {
       console.log(message);
       // Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
       // whenever the user updates their address.
       makeCarbonFetch(message.address);
-    } else if (message.username) {
-        console.log("oof");
+    } else if (message.username && message.action === "buy") { // buys the cart
+        fetch("http://127.0.0.1:5000/carbon-price/get-footprint", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({
+                'user_id': message.username,
+                'item_map': idObj
+            })
+            // we need to make sure firebase can do stuff
+        }).then((response) => { console.log(response); })
+    } else if (message.username && message.action === "update") { //updates the front end
+        fetch("http://127.0.0.1:5000/db/user/" + message.username)
+            .then((data) => {
+                return data.json();
+            }).then((json) => {
+                chrome.runtime.sendMessage({
+                    "spending": json.total_spending
+                })
+            })
     }
 });

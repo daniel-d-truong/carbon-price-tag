@@ -1,12 +1,5 @@
 // Note that it's very hard to debug this since it is a popup. 
 document.addEventListener("DOMContentLoaded", () => {
-    const broadcastObj = (obj) => {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            let activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, obj);
-        });
-    };
-
     drawArc();
 
     // username
@@ -18,10 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
     username_form.addEventListener("submit", (event) => {
         event.preventDefault();
         const username = document.querySelector("#username").value;
-        console.log(username);
         const el = event.target.elements[0];
         el.blur();
         // call backend to retrieve info associated with username and update carbon spending
+        broadcastObj({"username": username, "action": "update"});
+
     })
 
     // address
@@ -59,10 +53,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Buying foods event listener
     document.querySelector(".button").addEventListener("click", () => {
         const username = document.querySelector("#username").value;
-        broadcastObj({"username": username});
-        console.log(username);
+        broadcastObj({"username": username, "action": "buy"});
     });
-    
+
+    // Listener to communicate front end data to backend
+    chrome.runtime.onMessage.addListener((request) => {
+        console.log(request.spending);
+        document.querySelector("#carbonSpending").innerText = request.spending;
+        drawArc();
+    });
+
+    broadcastObj({"username": "numberonetruong", "action": "update"});
 });
 
 function drawArc() {
@@ -79,3 +80,10 @@ function drawArc() {
         arc.style.stroke = "#C73E41";
     }
 }
+
+const broadcastObj = async (obj) => {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        let activeTab = tabs[0];
+        chrome.tabs.sendMessage(activeTab.id, obj);
+    });
+};
