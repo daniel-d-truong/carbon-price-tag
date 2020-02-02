@@ -6,26 +6,19 @@
         <link rel="stylesheet" type="text/css" href="popup.css">
     </head>
     <body>
-        <h1>Carbon Price Tag</h1>
-        <p id="carbonSpending">50</p>
-        <form>
-            <input type="text" id="username" name="username" value="numberonetruong">
-            <input type="button" id="updateUser" name="updateUser" value="change usernmae">
+        <form id="user-form">
+            <input type="text" id="username" name="username" placeholder="Set username">
+            <input type="text" id="address" name="address" placeholder="Set address">
         </form>
-        <br>
-        <button id="showModal">Change Address</button>
-        <form>
-            <p>Address: <p>
-            <input type="text" id="address" name="address" value="123 Example St"><br>
-            <p>City:</p>
-            <input type="text" id="city" name="city" value="Baldwin Park"><br>
-            <p>State:</p>
-            <input type="text" id="state" name="state" value="CA">
-            <p>Zip Code:</p>
-            <input type="number" id="zip" name="zip" value="12345"><br>
-            <input type="button" id="update" name="updateButton" value="update">
-        </form>
-        
+        <div id="gauge">
+            <form id="budget-form">
+                <p class="label" id="budget-label">YOUR BUDGET</p>
+                <input type="text" id="budget" name="budget" placeholder="Set budget">
+            </form>
+            <p id="carbonSpending">0</p>
+            <p class="label" id="spending-label">YOUR CARBON SPENDING</p>
+        </div>
+        <div id="logo"></div>
         <script src="popup.js"/>
     </body>
 </html>
