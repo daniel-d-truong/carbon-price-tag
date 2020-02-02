@@ -17,20 +17,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // username
     const username_form = document.querySelector("#username-form");
+    const username_input = username_form.querySelector("input");
+    username_input.addEventListener("focus", (event) => {
+        event.target.select();
+    });
     username_form.addEventListener("submit", (event) => {
         event.preventDefault();
         const username = document.querySelector("#username").value;
         console.log(username);
+        const el = event.target.elements[0];
+        el.blur();
         // call backend to retrieve info associated with username and update carbon spending
     })
 
     // address
     const addresses = document.querySelectorAll("#address-form input");
     addresses.forEach(function(item, index) {
+        item.addEventListener("focus", (event) => {
+            event.target.select();
+        })
         item.addEventListener("keyup", (event) => {
             if (event.key == "Enter") {
                 const finalAddress = addresses[0].value + ", " + addresses[1].value;
                 console.log(finalAddress);
+                const el = event.target;
+                el.blur();
                 broadcastAddress(finalAddress);
             }
         });
@@ -38,10 +49,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // budget
     const budget_form = document.querySelector("#budget-form");
+    const budget_input = budget_form.querySelector("input");
+    budget_input.addEventListener("focus", (event) => {
+        event.target.select();
+    })
     budget_form.addEventListener("submit", (event) => {
         event.preventDefault();
         const budget = document.querySelector("#budget").value;
         console.log(budget);
+        const el = event.target.elements[0];
+        el.blur();
         drawArc();
     });
     
