@@ -26,11 +26,12 @@ def load_co2s():
             co2s_in_miles[row[0]] = co2s[row[0]] * MILE_EQUIV
 
 def calc_shipping_distance(home_address):
-    shopList = gmaps.places_nearby(location=home_address,
-                                    keyword="whole foods",
-                                    rank_by="distance")
+    addressCoords = gmaps.geocode(home_address)[0]["geometry"]["location"]
+    shopList = gmaps.places_nearby(location=addressCoords,
+                                keyword="whole foods",
+                                rank_by="distance")
     shopCoords = shopList["results"][0]["geometry"]["location"]
-    matrix = gmaps.distance_matrix([home_address], [shopCoords], units="imperial")
+    matrix = gmaps.distance_matrix([addressCoords], [shopCoords], units="imperial")
     distance = matrix["rows"][0]["elements"][0]["distance"]["value"]/METERS_TO_MILES
     return distance
 
@@ -45,7 +46,7 @@ def calc_carbon_cost(item, home_address, weight, ingredients):
     production_miles = co2s_in_miles[item] + calc_ingredients_cost(ingredients)
     transport_dist = calc_shipping_distance(home_address)
     cost = (production_miles + transport_dist)  / FUEL_EFFIC * GAS_PRICE
-    cost /= weight
+    #cost /= weight
     return cost
 
 # Params expected: name, ingredients, weight, address
@@ -55,9 +56,9 @@ def get_footprint():
     json_req = request.json
     print(json_req)
 
-    if 'address' in json_req and 'weight' in json_req:
+    if 'name' in json_req and 'ingredients' in json_req and 'weight' in json_req and 'carbon_location' in json_req:
         return jsonify({
-            "total_carbon_cost": calc_carbon_cost(json_req['name'], json_req['address'], json_req['weight'], json_req['ingredients'])
+            "total_carbon_cost": calc_carbon_cost(json_req['name'], json_req['carbon_location'], json_req['weight'], json_req['ingredients'])
         })
     else:
         return 'error exception here'
