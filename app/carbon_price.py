@@ -46,8 +46,9 @@ def calc_carbon_cost(item, home_address, weight, ingredients):
     production_miles = co2s_in_miles[item] + calc_ingredients_cost(ingredients)
     transport_dist = calc_shipping_distance(home_address)
     cost = (production_miles + transport_dist)  / FUEL_EFFIC * GAS_PRICE
+    kgOfCo2 = (production_miles + transport_dist) / MILE_EQUIV
     #cost /= weight
-    return cost
+    return cost,kgOfCo2
 
 # Params expected: name, ingredients, weight, address
 @carbon_price.route('/get-footprint', methods=['POST'])
@@ -57,8 +58,10 @@ def get_footprint():
     print(json_req)
 
     if 'name' in json_req and 'ingredients' in json_req and 'weight' in json_req and 'carbon_location' in json_req:
+        cost, kgOfCo2 = calc_carbon_cost(json_req['name'], json_req['carbon_location'], json_req['weight'], json_req['ingredients'])
         return jsonify({
-            "total_carbon_cost": calc_carbon_cost(json_req['name'], json_req['carbon_location'], json_req['weight'], json_req['ingredients'])
+            "total_carbon_cost": cost,
+            'kg_of_co2': kgOfCo2
         })
     else:
         return 'error exception here'

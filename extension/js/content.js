@@ -48,6 +48,10 @@ const carbonTable = document.createElement("table");
 const carbonData1 = document.createElement("td");
 const carbonData2 = document.createElement("td");
 
+const price = new Intl.NumberFormat('en-US',
+                        { style: 'currency', currency: 'USD',
+                          minimumFractionDigits: 2 });``
+
 carbonTable.setAttribute("style", "\
     display: block;\
     width: 90%;\
@@ -64,7 +68,8 @@ carbonData2.setAttribute("style", "color: #53aa56;");
 carbonData1.innerHTML = "Carbon price:";
 const carbonCost = 1.23;
 const carbonCO2 = 60;
-carbonData2.innerHTML = "est. $" + carbonCost + "  (equivalent to " + carbonCO2 + " kg of CO2)";
+const placeHolder = "___"
+carbonData2.innerHTML = "est. $" + placeHolder + "  (equivalent to " + placeHolder + " kg of CO2)";
 
 carbonRow.appendChild(carbonCell);
 carbonCell.appendChild(carbonTable);
@@ -90,6 +95,8 @@ port.onMessage.addListener(function(message) {
     }).then(response => {
         return response.json();
     }).then((json) => {
-        carbonData2.innerHTML = '$' + json['total_carbon_cost']
+        let cost = json['total_carbon_cost'];
+        let co2Mass = json['kg_of_co2']
+        carbonData2.innerHTML = "est. $" + cost + "  (equivalent to " + co2Mass + " kg of CO2)";
     });
 });
