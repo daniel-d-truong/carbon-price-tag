@@ -73,10 +73,6 @@ for (const feature of feature_list) {
 let weight = item_weight + ship_weight;
 console.log([item_weight, ship_weight, asin]);
 
-const port = chrome.runtime.connect({
-    name: 'amazon-port'
-});
-
 // Gets the name of the product
 const productTitleEl = document.querySelector("#productTitle");
 const productName = productTitleEl.innerText.split(" ")[0];
@@ -147,7 +143,7 @@ carbonTable.appendChild(carbonData1);
 carbonTable.appendChild(carbonData2);
 el.insertAdjacentElement('afterend', carbonRow);
 
-port.onMessage.addListener(function(message) {
+chrome.runtime.onMessage.addListener(function(message) {
     console.log(message);
     // Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
     // whenever the user updates their address.

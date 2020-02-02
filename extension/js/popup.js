@@ -1,15 +1,9 @@
 // Note that it's very hard to debug this since it is a popup. 
 document.addEventListener("DOMContentLoaded", () => {
-
-    let _port; 
-    chrome.runtime.onConnect.addListener(function(port) {
-        console.log("connected to: " + port);
-        _port = port;
-    });
-
     const broadcastAddress = (address) => {
-        _port.postMessage({
-            address: address
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            var activeTab = tabs[0];
+            chrome.tabs.sendMessage(activeTab.id, {"address": address});
         });
     };
 
