@@ -42,13 +42,19 @@ def add_item():
         json_req = request.json
         item_data = {}
         if 'id' in json_req:
-            item_id = json_req['id']
-            item_data['id'] = item_id
-            if 'price' in json_req:
-                item_data['price'] = json_req['price']
+            if 'name' not in json_req:
+                raise Exception('no name given')
+            item_data['id'] = json_req['id']
+            item_data['name'] = json_req['name']
+            if 'ingredients' in json_req:
+                item_data['ingredients'] = json_req['ingredients']
             else:
-                raise Exception('no price given')
-            items.document(item_id).set(item_data)
+                item_data['ingredients'] = None
+            if 'weight' in json_req:
+                item_data['weight'] = json_req['weight']
+            else:
+                item_data['weight'] = None
+            item_make(json_req['id'], json_req['name'], json_req['ingredients'], json_req['weight'])
             return jsonify({"success": True}), 200
         else:
             raise Exception('no item id given')
@@ -57,8 +63,7 @@ def add_item():
         return f"An Error Occured: {e}"
 
 
-def item_make(item_id, name, ingredients=None, item_weight=None,
-              ship_weight=None):
+def item_make(item_id, name, ingredients=None, weight=None):
     """
     create item with specified params. otherwise modifies existing item
     adds to db
@@ -69,10 +74,8 @@ def item_make(item_id, name, ingredients=None, item_weight=None,
     new_item['name'] = name
     if ingredients:
         new_item['ingredients'] = ingredients
-    if item_weight:
-        new_item['item_weight'] = item_weight
-    if ship_weight:
-        new_item['ship_weight'] = ship_weight
+    if weight:
+        new_item['weight'] = weight
 
     items.document(item_id).set(new_item)
     return jsonify({"success": True}), 200
