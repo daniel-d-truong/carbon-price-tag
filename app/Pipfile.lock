@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b30d729c96637bf0d071fc606c047d1b43382a2181d9b537c38ff1448c882f9d"
+            "sha256": "2c8c659b67c71f02304a7b70886f21b18def5afb020c830858e89d97cd57ad36"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -298,6 +298,13 @@
             ],
             "version": "==0.6.2"
         },
+        "pipfile": {
+            "hashes": [
+                "sha256:f7d9f15de8b660986557eb3cc5391aa1a16207ac41bc378d03f414762d36c984"
+            ],
+            "index": "pypi",
+            "version": "==0.0.2"
+        },
         "protobuf": {
             "hashes": [
                 "sha256:0329e86a397db2a83f9dcbe21d9be55a47f963cdabc893c3a24f4d3a8f117c37",
@@ -370,6 +377,13 @@
                 "sha256:e2c1c5dee4a1c36bcb790e0fabd5492d874b8ebd4617622c4f6a731701060dda"
             ],
             "version": "==1.9.5"
+        },
+        "toml": {
+            "hashes": [
+                "sha256:229f81c57791a41d65e399fc06bf0848bab550a9dfd5ed66df18ce5f05e73d5c",
+                "sha256:235682dd292d5899d361a811df37e04a8828a5b1da3115886b73cf81ebc9100e"
+            ],
+            "version": "==0.10.0"
         },
         "uritemplate": {
             "hashes": [

@@ -3,3 +3,4 @@ requests
 beautifulsoup4
 firebase_admin
 googlemaps
+flask_cors
