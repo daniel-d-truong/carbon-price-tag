@@ -3,17 +3,19 @@
     <head>
         <meta charset="UTF-8">
         <title>Carbon Price Tag</title>
-        <link rel="stylesheet" type="text/css" href="popup.css">
+        <link rel="stylesheet" type="text/css" href="css/fonts.css">
+        <link rel="stylesheet" type="text/css" href="css/popup.css">
     </head>
     <body>
         <form id="user-form">
-            <input type="text" id="username" name="username" placeholder="Set username">
-            <input type="text" id="address" name="address" placeholder="Set address">
+            <input type="text" id="username" name="username" placeholder="Set username" value="numberonetruong">
+            <input type="text" id="address1" name="address1" placeholder="Set address (line 1)" value="3607 Trousdale Pkwy">
+            <input type="text" id="address2" name="address2" placeholder="Set address (line 2)" value="Los Angeles, CA 90089">
         </form>
         <div id="gauge">
             <form id="budget-form">
                 <p class="label" id="budget-label">YOUR BUDGET</p>
-                <input type="text" id="budget" name="budget" placeholder="Set budget">
+                <input type="text" id="budget" name="budget" placeholder="Set budget" value="100">
             </form>
             <p id="carbonSpending">0</p>
             <p class="label" id="spending-label">YOUR CARBON SPENDING</p>
