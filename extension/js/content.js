@@ -43,8 +43,8 @@ const grabWeightPerQuan = (term) => {
     weight = convertToPounds(Number(amount));
 }
 
-const url = window.location.href;
 // logic for doing the cart
+const url = window.location.href;
 if (url.includes("cart")) {
     cartCarbonFootprint();
 } 
@@ -53,12 +53,11 @@ if (url.includes("cart")) {
 let a = document.querySelector("#detail-bullets");
 let feature_list = a.getElementsByTagName("table")[0].getElementsByTagName('tbody')[0].getElementsByTagName('tr')[0].getElementsByTagName('td')[0].getElementsByTagName('div')[0].getElementsByTagName('ul')[0].getElementsByTagName('li')
 let item_weight = 0;
-let ship_weight = 0.5;
+let ship_weight = 0;
 let asin = null;
 let weightFound = false;
 for (const feature of feature_list) {
     let feature_arr = feature.innerText.split(': ');
-    // Not guaranteed to exist
     if (feature_arr[0] === "Item Weight") {
         item_weight = Number(feature_arr[1]);
         weightFound = true;
@@ -67,13 +66,16 @@ for (const feature of feature_list) {
         ship_weight = Number(feature_arr[1]);
         weightFound = true;
     }
-    // Guaranteed to always exist
     if (feature_arr[0] === "ASIN") {
         asin = feature_arr[1]
     }
 }
 let weight = item_weight + ship_weight;
 console.log([item_weight, ship_weight, asin]);
+
+const port = chrome.runtime.connect({
+    name: 'amazon-port'
+});
 
 // Gets the name of the product
 const productTitleEl = document.querySelector("#productTitle");
@@ -104,28 +106,58 @@ if (!weightFound) {
 
 console.log("Weight: " + weight);
 
-// Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
-// whenever the user updates their address.
-
-
 // Adds the new element into the Amazon page
 const el = document.querySelector("#priceblock_ourprice_row");
 const carbonRow = document.createElement("tr");
+const carbonCell = document.createElement("td");
+carbonCell.setAttribute("colspan", 2);
+const carbonTable = document.createElement("table");
 const carbonData1 = document.createElement("td");
 const carbonData2 = document.createElement("td");
 
-const carbonRowStyles = "padding: 1em;display: block;margin: 1em;width: 100%;border-radius: 5px;border: 1px solid #53aa56;";
-const carbonData1Styles = "color: #555;";
-const carbonData2Styles = "color: #53aa56;";
-
-carbonRow.setAttribute("style", carbonRowStyles);
-carbonData1.setAttribute("style", carbonData1Styles);
-carbonData2.setAttribute("style", carbonData2Styles);
+carbonTable.setAttribute("style", "\
+    display: block;\
+    width: 90%;\
+    margin-top: 1em;\
+    padding: 1em;\
+    font-family: Affogato, sans-serif;\
+    font-size: 14px;\
+    font-weight: 500;\
+    border: 1px solid #53aa56;\
+    border-radius: 5px;");
+carbonData1.setAttribute("style", "color: #555;");
+carbonData2.setAttribute("style", "color: #53aa56;");
 
 carbonData1.innerHTML = "Carbon price:";
-carbonData2.innerHTML = "est. $1.23 (equivalent to 60 kg of CO2)";
+const carbonCost = 1.23;
+const carbonCO2 = 60;
+carbonData2.innerHTML = "est. $" + carbonCost + "  (equivalent to " + carbonCO2 + " kg of CO2)";
 
-carbonRow.appendChild(carbonData1);
-carbonRow.appendChild(carbonData2);
+carbonRow.appendChild(carbonCell);
+carbonCell.appendChild(carbonTable);
+carbonTable.appendChild(carbonData1);
+carbonTable.appendChild(carbonData2);
 el.insertAdjacentElement('afterend', carbonRow);
 
+port.onMessage.addListener(function(message) {
+    console.log(message);
+    // Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
+    // whenever the user updates their address.
+    fetch("http://127.0.0.1:5000/carbon-price/get-footprint", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+            'name': productName, 
+            'ingredients': ingredients,
+            'weight': item_weight + ship_weight,
+            'carbon_location': message.address 
+        })
+    }).then(response => {
+        return response.json();
+    }).then((json) => {
+        carbonData2.innerHTML = '$' + json['total_carbon_cost']
+    });
+});
