@@ -18,6 +18,10 @@ for (const feature of feature_list) {
 }
 console.log([item_weight, ship_weight, asin]);
 
+const port = chrome.runtime.connect({
+    name: 'amazon-port'
+});
+
 // Gets the name of the product
 const productTitleEl = document.querySelector("#productTitle");
 const productName = productTitleEl.innerHTML.split(" ")[0];
@@ -34,20 +38,6 @@ for (const infoEl of importantInfoEl){
     }
 }
 
-// Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
-// whenever the user updates their address.
-await fetch("http://127.0.0.1:5000/item", {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        'name': productName,
-        'ingredients': ingredients,
-        'weight': item_weight + ship_weight,
-        'carbon_location': ''
-    })
-});
 
 // Adds the new element into the Amazon page
 const el = document.querySelector("#priceblock_ourprice_row");
@@ -69,3 +59,22 @@ carbonData2.innerHTML = "est. $1.23 (equivalent to 60 kg of CO2)";
 carbonRow.appendChild(carbonData1);
 carbonRow.appendChild(carbonData2);
 el.insertAdjacentElement('afterend', carbonRow);
+
+port.onMessage.addListener(function(message) {
+    console.log(message);
+    // Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
+    // whenever the user updates their address.
+    fetch("http://127.0.0.1:5000/carbon-price/get-footprint", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            'name': productName, 'ingredients': ingredients,
+            'weight': item_weight + ship_weight,
+            'carbon_location': message.address 
+        })
+    }).then(response => {
+        console.log(response);
+    });
+});
