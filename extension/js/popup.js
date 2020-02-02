@@ -1,29 +1,11 @@
 // Note that it's very hard to debug this since it is a popup. 
 document.addEventListener("DOMContentLoaded", () => {
-    let _port; 
-    let _cartPort;
-
-    chrome.runtime.onConnect.addListener(function(port) {
-        console.log("connected to: " + port);
-        _port = port;
-    });
-
-    chrome.runtime.onConnect.addListener(function(cartPort) {
-        _cartPort = cartPort;
-        document.querySelector(".button").insertAdjacentElement("afterend", document.createElement("br"));
-    })
-
-    const broadcastAddress = (address) => {
-        _port.postMessage({
-            address: address
+    const broadcastObj = (obj) => {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            let activeTab = tabs[0];
+            chrome.tabs.sendMessage(activeTab.id, obj);
         });
     };
-
-    const broadcastUsername = (username) => {
-        _cartPort.postMessage({
-            userId: username
-        })
-    }
 
     drawArc();
 
@@ -54,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.log(finalAddress);
                 const el = event.target;
                 el.blur();
-                broadcastAddress(finalAddress);
+                broadcastObj({"address": address});
             }
         });
     });
@@ -77,7 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Buying foods event listener
     document.querySelector(".button").addEventListener("click", () => {
         const username = document.querySelector("#username").value;
-        broadcastUsername(username);
+        broadcastObj({"username": username});
+        console.log(username);
     });
     
 });
