@@ -24,7 +24,7 @@ const port = chrome.runtime.connect({
 
 // Gets the name of the product
 const productTitleEl = document.querySelector("#productTitle");
-const productName = productTitleEl.innerHTML.split(" ")[0];
+const productName = productTitleEl.innerHTML.trim().split(" ")[0];
 
 // Gets the ingredients of the product
 const importantInfoEl = document.querySelector("#important-information").querySelectorAll(".content");
@@ -67,7 +67,8 @@ port.onMessage.addListener(function(message) {
     fetch("http://127.0.0.1:5000/carbon-price/get-footprint", {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify({
             'name': productName, 'ingredients': ingredients,
@@ -75,6 +76,8 @@ port.onMessage.addListener(function(message) {
             'carbon_location': message.address 
         })
     }).then(response => {
-        console.log(response);
+        return response.json();
+    }).then((json) => {
+        carbonData2.innerHTML = '$' + json['total_carbon_cost']
     });
 });
