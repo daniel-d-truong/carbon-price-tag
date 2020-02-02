@@ -71,7 +71,7 @@ function drawArc() {
     const arc = document.querySelector("#arc");
     const offsetMax = 1000;
     const offsetMin = 580;
-    arc.style["stroke-dashoffset"] = offsetMax - pct * (offsetMax - offsetMin);
+    arc.style["stroke-dashoffset"] = Math.max(offsetMax - pct * (offsetMax - offsetMin),0);
     if (carbonSpending <= budget) {
         arc.style.stroke = "#25922F";
     } else {
