@@ -47,14 +47,6 @@ const convertToKilo = (pounds) => {
     return 0.453592*pounds;
 };
 
-// logic for doing the cart
-const url = window.location.href;
-if (url.includes("cart")) {
-    cartCarbonFootprint();
-} else {
-    
-}
-
 // makes fetch request to the backend
 const makeCarbonFetch = async (address) => {
     fetch("http://127.0.0.1:5000/carbon-price/get-footprint", {
@@ -76,7 +68,22 @@ const makeCarbonFetch = async (address) => {
     });
 }
 
-// Gets the Item Weight, Shipping Weight, and asin
+
+// Ports
+const port = chrome.runtime.connect({
+    name: 'amazon-port'
+});
+
+const cartPort = chrome.runtime.connect({
+    name: 'cart'
+});
+
+// logic for doing the cart
+const url = window.location.href;
+if (url.includes("cart")) {
+    cartCarbonFootprint();
+} else {
+    // Gets the Item Weight, Shipping Weight, and asin
 let a = document.querySelector("#detail-bullets");
 let feature_list = a.getElementsByTagName("table")[0].getElementsByTagName('tbody')[0].getElementsByTagName('tr')[0].getElementsByTagName('td')[0].getElementsByTagName('div')[0].getElementsByTagName('ul')[0].getElementsByTagName('li')
 let item_weight = 0;
@@ -99,15 +106,6 @@ for (const feature of feature_list) {
 }
 let weight = item_weight + ship_weight;
 console.log([item_weight, ship_weight, asin]);
-
-// Ports
-const port = chrome.runtime.connect({
-    name: 'amazon-port'
-});
-
-const cartPort = chrome.runtime.connect({
-    name: 'cart'
-})
 
 // Gets the name of the product
 const productTitleEl = document.querySelector("#productTitle");
@@ -180,6 +178,9 @@ carbonTable.appendChild(carbonData2);
 el.insertAdjacentElement('afterend', carbonRow);
 
 makeCarbonFetch("13138 Waco St, Baldwin Park, 91706");
+}
+
+
 
 port.onMessage.addListener((message) => {
     console.log(message);
@@ -203,10 +204,6 @@ cartPort.onMessage.addListener((message) => {
     }).then(response => location.reload());
 });
 
-
-// {
-//     'user_id': 'ppppppppppppppppoooooooooooooop',
-//     "item_ma[" = {
-
-//     }
-// }
+var global = "";
+console.log(global);
+console.log("uwu");

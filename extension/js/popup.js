@@ -2,17 +2,28 @@
 document.addEventListener("DOMContentLoaded", () => {
     let _port; 
     let _cartPort;
+
     chrome.runtime.onConnect.addListener(function(port) {
         console.log("connected to: " + port);
         _port = port;
-        _cartPort = cartPort;
     });
+
+    chrome.runtime.onConnect.addListener(function(cartPort) {
+        _cartPort = cartPort;
+        document.querySelector(".button").insertAdjacentElement("afterend", document.createElement("br"));
+    })
 
     const broadcastAddress = (address) => {
         _port.postMessage({
             address: address
         });
     };
+
+    const broadcastUsername = (username) => {
+        _cartPort.postMessage({
+            userId: username
+        })
+    }
 
     drawArc();
 
@@ -62,6 +73,12 @@ document.addEventListener("DOMContentLoaded", () => {
         el.blur();
         drawArc();
     });
+
+    // Buying foods event listener
+    document.querySelector(".button").addEventListener("click", () => {
+        const username = document.querySelector("#username").value;
+        broadcastUsername(username);
+    });
     
 });
 
@@ -79,11 +96,3 @@ function drawArc() {
         arc.style.stroke = "#C73E41";
     }
 }
-
-// Buying foods event listener
-document.querySelector(".button").addEventListener("click", () => {
-    const username = document.querySelector("#username").value;
-    _cartPort.postMessage({
-        userId: username
-    })
-});
