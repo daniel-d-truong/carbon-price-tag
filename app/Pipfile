@@ -11,6 +11,8 @@ beautifulsoup4 = "*"
 Flask = "*"
 googlemaps = "*"
 firebase_admin = "*"
+flask-cors = "*"
+pipfile = "*"
 
 [requires]
 python_version = "3.7"

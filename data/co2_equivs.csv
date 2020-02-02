@@ -1,6 +1,6 @@
 FOOD,CO2_KILOS
 Lamb,39.2
-Beef,27.0
+e,27.0
 Cheese,13.5
 Pork,12.1
 Turkey,10.9
@@ -48,6 +48,7 @@ Radicchio,2.0
 Parsnip,2.0
 Peppers,2.0
 Potatoes,2.0
+Pumpkin,2.0
 Pumpkins,2.0
 Radish,2.0
 Rhubarb,2.0
@@ -64,8 +65,10 @@ Watermelon,2.0
 Winter squash,2.0
 Zucchini,2.0
 Milk,1.9
+Apple,1.1
 Apples,1.1
 Apricot,1.1
+Banana,1.1
 Blueberries,1.1
 Cantaloupe,1.1
 Cherries,1.1
