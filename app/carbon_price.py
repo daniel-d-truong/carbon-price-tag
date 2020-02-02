@@ -47,7 +47,7 @@ def calc_carbon_cost(item, home_address, weight, ingredients):
     transport_dist = calc_shipping_distance(home_address)
     cost = (production_miles + transport_dist)  / FUEL_EFFIC * GAS_PRICE
     kgOfCo2 = (production_miles + transport_dist) / MILE_EQUIV
-    #cost /= weight
+    if weight != 0: cost /= weight
     return cost,kgOfCo2
 
 # Params expected: name, ingredients, weight, address

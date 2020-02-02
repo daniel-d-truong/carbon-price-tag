@@ -117,7 +117,11 @@ const carbonData2 = document.createElement("td");
 
 const price = new Intl.NumberFormat('en-US',
                         { style: 'currency', currency: 'USD',
-                          minimumFractionDigits: 2 });``
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        });
+const distance = new Intl.NumberFormat('en-US',
+                        { maximumFractionDigits: 2 });
 
 carbonTable.setAttribute("style", "\
     display: block;\
@@ -163,8 +167,8 @@ port.onMessage.addListener(function(message) {
     }).then(response => {
         return response.json();
     }).then((json) => {
-        let cost = json['total_carbon_cost'];
-        let co2Mass = json['kg_of_co2']
-        carbonData2.innerHTML = "est. $" + cost + "  (equivalent to " + co2Mass + " kg of CO2)";
+        let cost = price.format(json['total_carbon_cost']);
+        let co2Mass = distance.format(json['kg_of_co2']);
+        carbonData2.innerHTML = "est. " + cost + "  (equivalent to " + co2Mass + " kg of CO2)";
     });
 });
