@@ -49,7 +49,7 @@ input[type="text"]:hover {
 
 #gauge {
     width: 410px;
-    height: 323px;
+    height: 292px;
     margin: auto;
     background: url("../img/gauge.svg") no-repeat center top;
 }
