@@ -1,10 +1,11 @@
 // Note that it's very hard to debug this since it is a popup. 
 document.addEventListener("DOMContentLoaded", () => {
-
     let _port; 
+    let _cartPort;
     chrome.runtime.onConnect.addListener(function(port) {
         console.log("connected to: " + port);
         _port = port;
+        _cartPort = cartPort;
     });
 
     const broadcastAddress = (address) => {
@@ -78,3 +79,11 @@ function drawArc() {
         arc.style.stroke = "#C73E41";
     }
 }
+
+// Buying foods event listener
+document.querySelector(".button").addEventListener("click", () => {
+    const username = document.querySelector("#username").value;
+    _cartPort.postMessage({
+        userId: username
+    })
+});

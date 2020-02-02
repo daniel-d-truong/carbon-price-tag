@@ -1,8 +1,8 @@
 // Set functions
+const idObj = {}
 const cartCarbonFootprint = () => {
     const allCartEl = document.querySelectorAll(".sc-product-title.a-size-medium");
     const quantityElList = document.querySelectorAll(".a-icon.a-icon-dropdown")
-    const idObj = { };
     for (let i = 0; i < allCartEl.length; i++) {
         // gets the ID of the amazon item
         const item = allCartEl[i];
@@ -22,15 +22,15 @@ const cartCarbonFootprint = () => {
             console.log("changed");
         });
         if (id) {
-            idObj[id] = quantity
+            idObj[id] = quantity;
         }
     }
     console.log(idObj);
-}
+};
 
 const convertToPounds = (ounces) => {
     return ounces*(0.0625);
-}
+};
 
 const grabWeightPerQuan = (term) => {
     let i = upperProductName.indexOf(term) - 2;
@@ -41,13 +41,40 @@ const grabWeightPerQuan = (term) => {
         i--;
     }
     weight = convertToPounds(Number(amount));
-}
+};
+
+const convertToKilo = (pounds) => {
+    return 0.453592*pounds;
+};
 
 // logic for doing the cart
 const url = window.location.href;
 if (url.includes("cart")) {
     cartCarbonFootprint();
-} 
+} else {
+    
+}
+
+// makes fetch request to the backend
+const makeCarbonFetch = async (address) => {
+    fetch("http://127.0.0.1:5000/carbon-price/get-footprint", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+            'name': productName, 
+            'ingredients': ingredients,
+            'weight': item_weight + ship_weight,
+            'carbon_location': address 
+        })
+    }).then(response => {
+        return response.json();
+    }).then((json) => {
+        carbonData2.innerHTML = '$' + json['total_carbon_cost']
+    });
+}
 
 // Gets the Item Weight, Shipping Weight, and asin
 let a = document.querySelector("#detail-bullets");
@@ -73,9 +100,14 @@ for (const feature of feature_list) {
 let weight = item_weight + ship_weight;
 console.log([item_weight, ship_weight, asin]);
 
+// Ports
 const port = chrome.runtime.connect({
     name: 'amazon-port'
 });
+
+const cartPort = chrome.runtime.connect({
+    name: 'cart'
+})
 
 // Gets the name of the product
 const productTitleEl = document.querySelector("#productTitle");
@@ -143,27 +175,34 @@ carbonTable.appendChild(carbonData1);
 carbonTable.appendChild(carbonData2);
 el.insertAdjacentElement('afterend', carbonRow);
 
-port.onMessage.addListener(function(message) {
+makeCarbonFetch("13138 Waco St, Baldwin Park, 91706");
+
+port.onMessage.addListener((message) => {
     console.log(message);
     // Makes a POST request which would send information to the backend and retreives the carbon pricing in response. This should be redone 
     // whenever the user updates their address.
-    fetch("http://127.0.0.1:5000/carbon-price/get-footprint", {
+    makeCarbonFetch(message.address);
+});
+
+cartPort.onMessage.addListener((message) => {
+    console.log(message);
+    fetch("http://127.0.0.1:5000/db/cart", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify({
-            'name': productName, 
-            'ingredients': ingredients,
-            'weight': item_weight + ship_weight,
-            'carbon_location': message.address 
+            "user_id": message.event, 
+            "item_map": idObj
         })
-    }).then(response => {
-        return response.json();
-    }).then((json) => {
-        let cost = json['total_carbon_cost'];
-        let co2Mass = json['kg_of_co2']
-        carbonData2.innerHTML = "est. $" + cost + "  (equivalent to " + co2Mass + " kg of CO2)";
-    });
+    }).then(response => location.reload());
 });
+
+
+// {
+//     'user_id': 'ppppppppppppppppoooooooooooooop',
+//     "item_ma[" = {
+
+//     }
+// }
