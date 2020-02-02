@@ -1,5 +1,6 @@
 from flask import Blueprint, abort, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app
+from carbon_price import calc_carbon_cost
 
 firebase_db = Blueprint('firebase_db', __name__)
 
@@ -24,6 +25,13 @@ def get_item(item_id):
         itm = items.document(item_id).get()
         return jsonify(itm.to_dict()), 200
 
+    except Exception as e:
+        return f"An Error Occured: {e}"
+
+def get_item_by_id(item_id):
+    try:
+        itm = items.document(item_id).get()
+        return itm
     except Exception as e:
         return f"An Error Occured: {e}"
 
@@ -87,3 +95,46 @@ def get_user(user_id):
 
     except Exception as e:
         return f"An Error Occured: {e}"
+
+def get_user_by_id(user_id):
+    try:
+        usr = users.document(user_id).get()
+        return usr
+    except Exception as e:
+        return f"An Error Occured: {e}"
+
+
+# @firebase_db.route('/user/<user_id>/update')
+# def update_user(user_id):
+#     try:
+#         json_req = request.json
+#         item_data = {}
+#     except Exception as e:
+#         return f"An Error Occured: {e}"
+
+
+def update_user_footprint(user_id, item_map):
+    # map of item ids corresponding to total weight of each
+    # iterate thru list of ids, calculate for each one
+    #
+
+    user_info = get_user_by_id(user_id)
+
+    new_footprint = 0
+
+    for item_key in item_map:
+        item_info = get_item_by_id(item_key)
+        footprint = calc_carbon_cost(item_key, user_info['location'], item_info['weight'], item_info['ingredients'])
+
+        # total footprint is that footprint times the quantity of the item that was ordered
+        total_footprint = footprint * item_map[item_key]
+
+        new_footprint += total_footprint
+
+    # update user footprint
+    user_info['carbon_footprint'] = new_footprint
+
+    users.document(user_id).update(user_info)
+
+    # idk what to return here.... we succeeded!
+    return True
