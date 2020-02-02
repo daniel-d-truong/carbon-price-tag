@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
             address: address
         });
     };
+
+    drawArc();
+
     // username
     const username_form = document.querySelector("#username-form");
     username_form.addEventListener("submit", (event) => {
@@ -39,6 +42,22 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         const budget = document.querySelector("#budget").value;
         console.log(budget);
+        drawArc();
     });
     
 });
+
+function drawArc() {
+    const carbonSpending = parseFloat(document.querySelector("#carbonSpending").innerHTML);
+    const budget = parseFloat(document.querySelector("#budget").value);
+    const pct = carbonSpending / budget;
+    const arc = document.querySelector("#arc");
+    const offsetMax = 1000;
+    const offsetMin = 580;
+    arc.style["stroke-dashoffset"] = offsetMax - pct * (offsetMax - offsetMin);
+    if (carbonSpending <= budget) {
+        arc.style.stroke = "#25922F";
+    } else {
+        arc.style.stroke = "#C73E41";
+    }
+}

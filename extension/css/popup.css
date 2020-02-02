@@ -54,6 +54,20 @@ input[type="text"]:hover {
     background: url("../img/gauge.svg") no-repeat center top;
 }
 
+#arc-svg {
+    position: absolute;
+    width: 410px;
+    height: 243px;
+}
+
+#arc {
+    fill: none;
+    stroke-width: 72;
+    stroke-miterlimit: 10;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 730;
+}
+
 #budget-form {
     position: absolute;
     right: 40px;
@@ -76,7 +90,7 @@ input[type="text"]:hover {
     margin: 0;
     padding-top: 100px;
     text-align: center;
-    font-size: 144px;
+    font-size: 120px;
     font-weight: 900;
 }
 
