@@ -6,7 +6,7 @@ from carbon_price import carbon_price
 app = Flask(__name__)
 app.register_blueprint(firebase_db, url_prefix='/db')
 app.register_blueprint(scrape, url_prefix='/scrape')
-app.register_blueprint(carbon_price, url_prefix='/get-footprint')
+app.register_blueprint(carbon_price, url_prefix='/carbon-price')
 
 
 @app.route('/')
