@@ -149,7 +149,11 @@ const carbonData2 = document.createElement("td");
 
 const price = new Intl.NumberFormat('en-US',
                         { style: 'currency', currency: 'USD',
-                          minimumFractionDigits: 2 });``
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        });
+const distance = new Intl.NumberFormat('en-US',
+                        { maximumFractionDigits: 2 });
 
 carbonTable.setAttribute("style", "\
     display: block;\
