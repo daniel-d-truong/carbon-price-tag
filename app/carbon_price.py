@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+import db
 import csv
 import googlemaps
 import globals
@@ -44,28 +45,37 @@ def calc_ingredients_cost(ingredients):
 
 
 def calc_carbon_cost(item, home_address, weight, ingredients):
-    production_miles = co2s_in_miles[item] + calc_ingredients_cost(ingredients)
+    production_miles = calc_ingredients_cost(ingredients)
+    if item in co2s_in_miles:
+        production_miles += co2s_in_miles[item]
+    print("miles: " + str(production_miles))
     transport_dist = calc_shipping_distance(home_address)
     cost = (production_miles + transport_dist)  / FUEL_EFFIC * GAS_PRICE
     kgOfCo2 = (production_miles + transport_dist) / MILE_EQUIV
     if weight != 0: cost /= weight
     return cost,kgOfCo2
 
-
 # Params expected: name, ingredients, weight, address
 @carbon_price.route('/get-footprint', methods=['POST'])
 def get_footprint():
-    print("hi")
     json_req = request.json
-    print(json_req)
-
-    if 'name' in json_req and 'ingredients' in json_req and 'weight' in json_req and 'carbon_location' in json_req:
-        print(json_req['name'])
-        for item in json_req['name']:
+    if 'name' in json_req and 'ingredients' in json_req and 'weight' in json_req and 'carbon_location' in json_req and 'id' in json_req:
+        itemList = json_req['name'].split()
+        
+        for item in itemList:
             if item not in co2s:
                 print("Not here: " + str(item))
                 continue
             cost, kgOfCo2 = calc_carbon_cost(item, json_req['carbon_location'], json_req['weight'], json_req['ingredients'])
+            db.item_make(json_req['id'], item, ingredients = json_req['ingredients'], weight = json_req['weight'])
+            return jsonify({
+                "total_carbon_cost": cost,
+                'kg_of_co2': kgOfCo2
+            })
+        
+        cost, kgOfCo2 = calc_carbon_cost(item, json_req['carbon_location'], json_req['weight'], json_req['ingredients'])
+        if cost != 0:   
+            db.item_make(json_req['id'], item, ingredients = json_req['ingredients'], weight = json_req['weight'])
             return jsonify({
                 "total_carbon_cost": cost,
                 'kg_of_co2': kgOfCo2
