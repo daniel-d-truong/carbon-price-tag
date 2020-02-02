@@ -24,7 +24,7 @@ const port = chrome.runtime.connect({
 
 // Gets the name of the product
 const productTitleEl = document.querySelector("#productTitle");
-const productName = productTitleEl.innerHTML.split(" ")[0];
+const productName = productTitleEl.innerHTML.trim().split(" ")[0];
 
 // Gets the ingredients of the product
 const importantInfoEl = document.querySelector("#important-information").querySelectorAll(".content");
