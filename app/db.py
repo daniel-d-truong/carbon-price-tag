@@ -113,6 +113,18 @@ def get_user_by_id(user_id):
 #         return f"An Error Occured: {e}"
 
 
+@firebase_db.route('/cart', methods=['POST'])
+def cart_checkout():
+    try:
+        json_req = request.json
+        if update_user_footprint(json_req['user_id'], json_req['item_map']):
+            return jsonify({"success": True}), 200
+        else:
+            raise Exception
+    except Exception as e:
+        return f"An Error Occured: {e}"
+
+
 def update_user_footprint(user_id, item_map):
     # map of item ids corresponding to total weight of each
     # iterate thru list of ids, calculate for each one
